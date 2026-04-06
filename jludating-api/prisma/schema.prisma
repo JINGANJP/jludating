@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  DELETED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNDISCLOSED
+}
+
+enum RoundStatus {
+  OPEN
+  RUNNING
+  CLOSED
+}
+
+enum MatchStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+model User {
+  id             String           @id @default(uuid())
+  email          String           @unique
+  passwordHash   String
+  isVerified     Boolean          @default(false)
+  status         UserStatus       @default(PENDING)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  profile        Profile?
+  questionnaire  Questionnaire?
+  participations RoundParticipant[]
+  initiatedA     MatchResult[]    @relation("UserA")
+  initiatedB     MatchResult[]    @relation("UserB")
+
+  @@index([email])
+  @@index([status])
+}
+
+model Profile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  nickname          String?
+  gender            Gender?
+  grade             String?
+  major             String?
+  department        String?
+  hometown          String?
+  mbti              String?
+  bio               String?
+  highlightedQuote  String?
+  profileCompletion Int      @default(0)
+  avatarUrl         String?
+  photoUrls         String[]
+  tags              String[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailWhitelist {
+  id         String   @id @default(uuid())
+  domain     String   @unique
+  university String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([domain])
+}
+
+model Questionnaire {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  answers    Json
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MatchingRound {
+  id               String             @id @default(uuid())
+  roundNumber      Int                @unique
+  startDate        DateTime
+  endDate          DateTime
+  status           RoundStatus        @default(OPEN)
+  participantCount Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  participants     RoundParticipant[]
+  matches          MatchResult[]
+}
+
+model RoundParticipant {
+  id        String        @id @default(uuid())
+  roundId   String
+  userId    String
+  joinedAt  DateTime      @default(now())
+  cancelledAt DateTime?
+  round     MatchingRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, userId])
+}
+
+model MatchResult {
+  id              String        @id @default(uuid())
+  roundId         String
+  userAId         String
+  userBId         String
+  similarityScore Float
+  userAAccepted   Boolean?
+  userBAccepted   Boolean?
+  status          MatchStatus   @default(PENDING)
+  createdAt       DateTime      @default(now())
+  round           MatchingRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  userA           User          @relation("UserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB           User          @relation("UserB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@index([roundId])
+  @@index([userAId])
+  @@index([userBId])
+}
