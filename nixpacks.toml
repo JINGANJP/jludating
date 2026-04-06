@@ -1,9 +1,0 @@
-[build]
-builder = "docker"
-dockerfile = "jludating-api/Dockerfile"
-context = "."
-
-[deploy]
-startCommand = "cd jludating-api && npm run start:prod"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
