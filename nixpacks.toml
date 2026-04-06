@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs"]
 
 [phases.build]
 cmds = ["cd jludating-api && npm install && npm run build && npx prisma generate"]
