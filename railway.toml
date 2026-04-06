@@ -1,10 +1,11 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd jludating-api && npm install && npm run build"
+buildCommand = "cd jludating-api && npm install && npm run build && npx prisma generate"
 
 [deploy]
-startCommand = "cd jludating-api && npm run start:prod"
-healthcheckPath = "/api/health"
-healthcheckTimeout = 100
+startCommand = "cd jludating-api && node dist/src/main.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
+[variables]
+NODE_ENV = "production"
