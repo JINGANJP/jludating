@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs"]
+nixPkgs = ["nodejs_22"]
 
 [phases.build]
-cmds = ["cd jludating-api && npm install && npm run build && npx prisma generate"]
+cmds = ["cd jludating-api && npm install --legacy-peer-deps && npm run build && npx prisma generate"]
 
 [phases.start]
 cmds = ["cd jludating-api && npm run start:prod"]
