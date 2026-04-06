@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, Length, Matches, MinLength } from 'class-validator'
+import { IsEmail, IsOptional, IsString, Matches, MinLength } from 'class-validator'
 
 export class RegisterDto {
   @IsEmail()
@@ -10,8 +10,10 @@ export class RegisterDto {
   code?: string
 
   @IsString()
-  @MinLength(8)
-  @Matches(/[A-Za-z]/, { message: 'Password must contain at least one letter' })
-  @Matches(/\d/, { message: 'Password must contain at least one number' })
+  @MinLength(12, { message: '密码至少需要 12 位' })
+  @Matches(/[A-Z]/, { message: '密码必须包含至少一个大写字母' })
+  @Matches(/[a-z]/, { message: '密码必须包含至少一个小写字母' })
+  @Matches(/\d/, { message: '密码必须包含至少一个数字' })
+  @Matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, { message: '密码必须包含至少一个特殊字符 (!@#$%^&*等)' })
   password!: string
 }

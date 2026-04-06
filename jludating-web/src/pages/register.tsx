@@ -18,9 +18,11 @@ const step1Schema = z.object({
 const step2Schema = z.object({
   password: z
     .string()
-    .min(8, '密码至少 8 位')
-    .regex(/[A-Za-z]/, '需包含字母')
-    .regex(/\d/, '需包含数字'),
+    .min(12, '密码至少 12 位')
+    .regex(/[A-Z]/, '需包含大写字母')
+    .regex(/[a-z]/, '需包含小写字母')
+    .regex(/\d/, '需包含数字')
+    .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, '需包含特殊字符 (!@#$%^&*等)'),
   confirmPassword: z.string(),
 }).refine((d) => d.password === d.confirmPassword, {
   message: '两次密码不一致',
